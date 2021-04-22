@@ -5,7 +5,7 @@ from nonebot.plugin import on_command
 from nonebot.rule import T_State
 from nonebot.adapters.cqhttp import Bot, GroupMessageEvent
 
-from ..data_source import AnimeResFilter, get
+from ..animeres import AnimeResFilter, get
 
 anime_res = on_command("资源", aliases={"动漫资源"})
 
