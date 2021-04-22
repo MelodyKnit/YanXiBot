@@ -1,5 +1,6 @@
 <h1 align="center">Anime Res Search</h1>
 <hr>
+<hr>
 
 ```python
 from nonebot.plugin import on_command
