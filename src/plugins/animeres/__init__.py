@@ -1,42 +1,80 @@
-from nonebot.plugin import on_command
-from nonebot.rule import T_State
-from nonebot.adapters.cqhttp import Bot, GroupMessageEvent
-from nonebot import get_driver
-from pprint import pprint
+from bs4 import BeautifulSoup
+from typing import Generator
+from .data_source import AnimeResSearch
 
-from .config import Config
-from .data_source import AnimeResSearch, AnimeResFilter
-
-global_config = get_driver().config
-config = Config(**global_config.dict())
+get = AnimeResSearch.get
 
 
-anime_res = on_command("资源", aliases={"动漫资源"})
+class AnimeResFilter:
+    __slots__ = ("data", "html", "types")
 
+    def __init__(self, data: Generator, html: BeautifulSoup = None):
+        """
+        :param data: 获取的资源的生成器
+        :param html: 整个页面
+        """
+        self.data = dict()
+        self.html = html
+        self.types = []
+        if data:
+            for value in data:
+                if value["type"] in self.types:
+                    self.data[value["type"]].append(value)
+                else:
+                    self.types.append(value["type"])
+                    self.data[value["type"]] = [value]
 
-@anime_res.handle()
-async def anime_res_handle(bot: Bot, event: GroupMessageEvent, state: T_State):
-    state["res"] = None
-    text = event.get_plaintext()
-    if text:
-        state["res"] = AnimeResFilter(*(await AnimeResSearch.get(text)))
-        msg = await state["res"].type_msg(anime_res)
-        await anime_res.send(msg)
-    else:
-        await anime_res.send("请输入资源名称也可以添加关键字，注意名称与关键字空格分隔。\n例如：天气之子或天气之子 mkv")
+    async def type_msg(self, bot) -> str:
+        """
+        :param bot: 用于发送获取的信息
+        :return: 当信息获取到时返回字符串让机器人发送
+        当获取到类型时表示有资源
+        如果资源类型只有一条便发送这一条数据
+        否则发送所有类型
+        """
+        if self.types:
+            if len(self.types) == 1:
+                await self.confirm_type_send(bot, self.data[self.types[0]][0])
+            await bot.send("获取类型如下:\n" + "\n".join([f"{i}. {t}" for i, t in enumerate(self.types)]))
+        else:
+            await bot.finish("未发现资源，先确认是否存在或输入是否有误！请重新输入。")
+        return "请选择所需类型名或数字索引"
 
+    async def confirm_type_msg(self, bot, text: str):
+        """
+        :param bot: 用于发送获取的信息
+        :param text: 关键字文本
+        判断文本是否能转为数字
+        如果依然是字符串
+            便通过字符串判断是否是以上类型中的一个，如果是便发送数据
+        是数字
+            查看是否能类型中的索引，如果是便发送数据
+        """
+        try:
+            text = int(text)
+        except ValueError:
+            ...
+        if isinstance(text, str):
+            for t in self.types:
+                if t in text:
+                    await self.confirm_type_send(bot, self.data[t][0])
+                continue
+        else:
+            if 0 <= text < len(self.types):
+                await self.confirm_type_send(bot, self.data[self.types[text]][0])
+        await bot.finish("您输入类型有误，请重新进行资源搜索！")
 
-@anime_res.got("msg")
-async def anime_res_got(bot: Bot, event: GroupMessageEvent, state: T_State):
-    text = event.get_plaintext()
-    if state["res"]:
-        await state["res"].confirm_type_msg(anime_res, text)
-    else:
-        if text:
-            state["res"] = AnimeResFilter(*(await AnimeResSearch.get(state["msg"])))
-            msg = await state["res"].type_msg(anime_res)
-            await anime_res.reject(msg)
-        await anime_res.reject("请输入资源名称！")
+    @staticmethod
+    async def confirm_type_send(bot, data: dict):
+        """
+        :param bot: 用于发送信息
+        :param data: 获取的资源中的数据
+        """
+        text = f"名称：{data['title'][:80]}...\n大小：{data['size']}"
+        magnet = await AnimeResSearch.get_magnet(data["href"])
+        await bot.send(text)
+        await bot.finish(magnet)
+
 
 
 
