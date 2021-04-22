@@ -15,7 +15,7 @@ async def anime_res_handle(bot: Bot, event: GroupMessageEvent, state: T_State):
     state["res"] = None
     text = event.get_plaintext()
     if text:
-        state["res"] = AnimeResFilter(*(await AnimeResSearch.get(text)))
+        state["res"] = AnimeResFilter(*(await get(text)))
         msg = await state["res"].type_msg(anime_res)
         await anime_res.send(msg)
     else:
@@ -29,7 +29,7 @@ async def anime_res_got(bot: Bot, event: GroupMessageEvent, state: T_State):
         await state["res"].confirm_type_msg(anime_res, text)
     else:
         if text:
-            state["res"] = AnimeResFilter(*(await AnimeResSearch.get(state["msg"])))
+            state["res"] = AnimeResFilter(*(await get(state["msg"])))
             msg = await state["res"].type_msg(anime_res)
             await anime_res.reject(msg)
         await anime_res.reject("请输入资源名称！")
