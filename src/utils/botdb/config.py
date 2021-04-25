@@ -1,8 +1,2 @@
-from pydantic import BaseSettings
+INFO_TABLE_NAME = "user_info"
 
-
-class Config(BaseSettings):
-    # Your Config Here
-
-    class Config:
-        extra = "ignore"
