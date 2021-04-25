@@ -48,6 +48,7 @@ class MySQLdb:
             self.connect.rollback()
 
     def __del__(self):
+        print("end===============")
         self.connect.close()
         self.cursor.close()
 
