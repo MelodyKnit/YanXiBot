@@ -1,5 +1,5 @@
 <h1 align="center">YanXiBot</h1>
-<p align="center">基于Nonebot2开发的QQ机器人程序</p>
+<p align="center">基于Nonebot2编写与gocq实现的QQ机器人程序</p>
 
 <div align="center">
 <img src="https://img.shields.io/badge/python-3.8+-blue" alt="python"><br />
