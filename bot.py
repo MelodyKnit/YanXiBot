@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import botdb
 import nonebot
 from nonebot.adapters.cqhttp import Bot
+from YanXiBot.src.utils import botdb
 
 
 botdb.run()

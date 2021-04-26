@@ -1,6 +1,6 @@
-from config import *
 from nonebot.log import logger
-from data_source import MySQLdb
+from .config import *
+from .data_source import MySQLdb
 
 
 class DBMethods:

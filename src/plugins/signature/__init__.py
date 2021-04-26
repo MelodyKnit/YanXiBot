@@ -2,7 +2,6 @@ from nonebot.rule import T_State
 from nonebot.adapters.cqhttp import Bot, GroupMessageEvent
 from nonebot import on_command
 
-# bot_db.init()
 
 login = on_command("签到")
 
