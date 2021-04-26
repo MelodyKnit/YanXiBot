@@ -10,6 +10,21 @@ class DBMethods:
     INFO_TABLE_NAME = INFO_TABLE_NAME
     db: MySQLdb = None
 
+    def insert(self, query: str, args=None):
+        self.db.execute_commit(f"insert into {query}", args)
+
+    def update(self, query: str, args=None):
+        self.db.execute_commit(f"update {query}", args)
+
+    def select(self, query: str, args=None):
+        self.db.execute(f"select {query}", args)
+        return self.db.cursor.fetchall()
+
+    def delete(self, query: str, args=None):
+        self.db.execute_commit(f"delete from {query}", args)
+
+
+class BotInitTable(DBMethods):
     def create_user_info_table(self):
         sql = (f"CREATE TABLE IF NOT EXISTS {self.INFO_TABLE_NAME}("
                "nickname VARCHAR(16) COMMENT '用户名称',"
@@ -27,21 +42,8 @@ class DBMethods:
         except Warning:
             logger.warning(f"{self.INFO_TABLE_NAME} 表已存在，无需创建")
 
-    def insert(self, query: str, args=None):
-        self.db.execute_commit(f"insert into {query}", args)
 
-    def update(self, query: str, args=None):
-        self.db.execute_commit(f"update {query}", args)
-
-    def select(self, query: str, args=None):
-        self.db.execute(f"select {query}", args)
-        return self.db.cursor.fetchall()
-
-    def delete(self, query: str, args=None):
-        self.db.execute_commit(f"delete from {query}", args)
-
-
-class BotDB(DBMethods):
+class BotDB(BotInitTable):
     __slots__ = ()
 
     def __init__(self, is_init):
