@@ -16,7 +16,13 @@ class DBMethods:
     def update(self, query: str, args=None):
         self.db.execute_commit(f"update {query}", args)
 
-    def select(self, query: str, args=None):
+    def select(self, query: str, args=None) -> list:
+        self.db.execute(f"select {query}", args)
+        return [{next(title.__iter__()): data
+                for title, data in zip(self.db.cursor.description, table)}
+                for table in self.db.cursor.fetchall()]
+
+    def raw_select(self, query: str, args=None) -> tuple:
         self.db.execute(f"select {query}", args)
         return self.db.cursor.fetchall()
 
@@ -64,3 +70,5 @@ def get_bot_db(is_init: bool = False) -> BotDB:
     if DBMethods.db:
         return BotDB(is_init)
     logger.error("数据库未运行！！！")
+
+

@@ -1,16 +1,14 @@
 from nonebot.rule import T_State
 from nonebot.adapters.cqhttp import Bot, GroupMessageEvent
 from nonebot import on_command
-
+from .data_source import SignInMethods
 
 login = on_command("签到")
 
 
 @login.handle()
 async def login_handle(bot: Bot, event: GroupMessageEvent, state: T_State):
-    ...
-    # if not bot_db.select_user(event.user_id):
-    #     bot_db.add_user(event.user_id, event.group_id)
-    #     await login.finish("签到成功")
-    # else:
-    #     await login.finish("已经签到过了")
+    info = SignInMethods(event.user_id, event.group_id)
+    # print(info.sign_in())
+    # if is_user(event.user_id):
+    #     ...
