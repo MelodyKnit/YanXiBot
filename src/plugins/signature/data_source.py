@@ -12,14 +12,18 @@ bot_db.init()
 class SignInMethods:
     __slots__ = ("user_id", "group_id", "user_info")
 
-    def __init__(self, user_id, group_id):
+    def __init__(self, user_id: int, group_id: int):
         self.user_id = user_id
         self.group_id = group_id
         self.user_info = get_user_info(user_id)
-        pprint(self.user_info)
+        if not self.user_info:
+            add_user(user_id, group_id)
+            self.user_info = get_user_info(user_id)
+        self.user_info = self.user_info[0]
 
     def sign_in(self):
-        ...
+        day_time = self.user_info["sign_time"]
+        print(day_time)
 
 
 def is_now(date: datetime) -> int:
@@ -36,8 +40,8 @@ def get_user_info(qid: int) -> list:
     return bot_db.select(f"* from {INFO_TABLE_NAME} where qid=%s", [qid])
 
 
-def add_user(qid: int, gid: int, integral: int = 0):
-    bot_db.insert(f"{INFO_TABLE_NAME} (qid,first_group,integral) values (%s,%s,%s)", [qid, gid, integral])
+def add_user(qid: int, gid: int):
+    bot_db.insert(f"{INFO_TABLE_NAME} (qid,first_group) values (%s,%s)", [qid, gid])
 
 
 def set_integral(qid: int, num: int):

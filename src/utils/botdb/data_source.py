@@ -1,26 +1,9 @@
 import pymysql
-from json import loads
-from os.path import exists
 from pymysql.err import IntegrityError
 from warnings import filterwarnings
-
+from YanXiBot.src.utils.readfile import read_config
 
 filterwarnings("error", category=pymysql.Warning)
-CONFIG_DIR = "__config__\\" if exists("__config__") else "config\\"
-
-# CONFIG_DIR = "..\\..\\..\\__config__\\"
-
-
-def read_config_file(path: str) -> dict:
-    """
-    :param path: MySQL 配置文件所在目录
-    :return: MySQL配置参数
-    """
-    try:
-        with open(path, mode="r") as file:
-            return loads(file.read())
-    except FileNotFoundError:
-        return {}
 
 
 def config(path: str, kwargs: dict) -> dict:
@@ -29,7 +12,7 @@ def config(path: str, kwargs: dict) -> dict:
     :param kwargs: 可改改或者直接传入 MySQL配置参数
     :return: MySQL配置参数
     """
-    return read_config_file(path or f"{CONFIG_DIR}mysql.json") | kwargs
+    return read_config(path) or {} | kwargs
 
 
 class MySQLdb:

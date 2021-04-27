@@ -1,5 +1,5 @@
-from nonebot.log import logger
 from .config import *
+from nonebot.log import logger
 from .data_source import MySQLdb
 
 
@@ -33,14 +33,14 @@ class DBMethods:
 class BotInitTable(DBMethods):
     def create_user_info_table(self):
         sql = (f"CREATE TABLE IF NOT EXISTS {self.INFO_TABLE_NAME}("
-               "nickname VARCHAR(16) COMMENT '用户名称',"
                "qid BIGINT PRIMARY KEY COMMENT '用户QQid',"
-               "first_group BIGINT NOT NULL COMMENT '第一次注册所在群',"
+               "nickname VARCHAR(16) COMMENT '用户名称',"
                "integral BIGINT NOT NULL DEFAULT 0 COMMENT '用户积分',"
+               "sign_time TIMESTAMP COMMENT '签到时间',"
+               "first_group BIGINT NOT NULL COMMENT '第一次注册所在群',"
+               "create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT '创建时间',"
                "sign_number_times SMALLINT NOT NULL  DEFAULT 0 COMMENT '累计签到次数',"
-               "continuous_sign_times SMALLINT NOT NULL DEFAULT 0 COMMENT '连续签到次数',"
-               "sign_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT '签到时间',"
-               "create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT '创建时间'"
+               "continuous_sign_times SMALLINT NOT NULL DEFAULT 0 COMMENT '连续签到次数'"
                ")")
         try:
             self.db.execute(sql)
@@ -62,8 +62,8 @@ class BotDB(BotInitTable):
         self.create_user_info_table()
 
 
-def run(path: str = None, **kwargs):
-    DBMethods.db = MySQLdb(path=path, **kwargs)
+def run(*, path: str = None, **kwargs):
+    DBMethods.db = MySQLdb(path=path or CONFIG_FILE, **kwargs)
 
 
 def get_bot_db(is_init: bool = False) -> BotDB:
