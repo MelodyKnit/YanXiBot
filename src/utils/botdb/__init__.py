@@ -16,13 +16,13 @@ class DBMethods:
     def update(self, query: str, args=None):
         self.db.execute_commit(f"update {query}", args)
 
-    def select(self, query: str, args=None) -> list:
-        self.db.execute(f"select {query}", args)
+    def select_all(self, query: str, args=None) -> list:
+        self.db.execute(f"select * from {query}", args)
         return [{next(title.__iter__()): data
                 for title, data in zip(self.db.cursor.description, table)}
                 for table in self.db.cursor.fetchall()]
 
-    def raw_select(self, query: str, args=None) -> tuple:
+    def select(self, query: str, args=None) -> tuple:
         self.db.execute(f"select {query}", args)
         return self.db.cursor.fetchall()
 
