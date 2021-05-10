@@ -1,7 +1,9 @@
 import os
 from .config import *
 from json import loads
+from nonebot.plugin import export
 
+export = export()
 slash = "/" if "/" in __file__ else "\\"
 path = os.path.dirname(__file__).split(slash)
 path = path[:path.index(DIR_NAME)]
@@ -22,18 +24,20 @@ def get_test_dir(args: list, dir_name: str) -> list:
 def read_file(file_path):
     try:
         with open(file_path, mode="r") as file:
-            return loads(file.read())
+            return file.read()
     except FileNotFoundError:
         return None
 
 
-def read_data(file_name: str) -> dict:
+def read_data(file_name: str):
     return read_file(slash.join([*DATA_DIR_NAME, file_name]))
 
 
 def read_config(file_name: str) -> dict:
-    return read_file(slash.join([*CONFIG_DIR_NAME, file_name]))
+    return loads(read_file(slash.join([*CONFIG_DIR_NAME, file_name])) or {})
 
 
+export.read_data = read_data
+export.read_config = read_config
 DATA_DIR_NAME = get_test_dir(path, DATA_DIR_NAME)
 CONFIG_DIR_NAME = get_test_dir(path, CONFIG_DIR_NAME)

@@ -1,9 +1,9 @@
 import pymysql
-from pymysql.err import IntegrityError
 from warnings import filterwarnings
-from YanXiBot.src.utils.readfile import read_config
+from nonebot.plugin import require
 
 filterwarnings("error", category=pymysql.Warning)
+read_config = require("readfile").read_config
 
 
 def config(path: str, kwargs: dict) -> dict:
@@ -20,16 +20,9 @@ class MySQLdb:
         self.connect = pymysql.connect(**config(path, kwargs))
         self.cursor = self.connect.cursor()
 
-    def execute(self, query: str, args=None):
-        self.cursor.execute(query, args)
-
-    def execute_commit(self, query: str, args=None):
-        try:
-            self.cursor.execute(query, args)
-            self.connect.commit()
-        except IntegrityError:
-            self.connect.rollback()
-
-    def __del__(self):
+    def close(self):
         self.connect.close()
         self.cursor.close()
+
+    def __del__(self):
+        self.close()

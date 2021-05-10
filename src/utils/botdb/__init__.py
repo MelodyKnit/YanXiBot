@@ -1,6 +1,10 @@
 from .config import *
 from nonebot.log import logger
 from .data_source import MySQLdb
+from nonebot.plugin import export
+from pymysql.err import IntegrityError
+
+export = export()
 
 
 class DBMethods:
@@ -10,24 +14,34 @@ class DBMethods:
     INFO_TABLE_NAME = INFO_TABLE_NAME
     db: MySQLdb = None
 
+    def execute(self, query: str, args=None):
+        self.db.cursor.execute(query, args)
+
+    def execute_commit(self, query: str, args=None):
+        try:
+            self.db.cursor.execute(query, args)
+            self.db.connect.commit()
+        except IntegrityError:
+            self.db.connect.rollback()
+
     def insert(self, query: str, args=None):
-        self.db.execute_commit(f"insert into {query}", args)
+        self.execute_commit(f"insert into {query}", args)
 
     def update(self, query: str, args=None):
-        self.db.execute_commit(f"update {query}", args)
+        self.execute_commit(f"update {query}", args)
 
     def select_all(self, query: str, args=None) -> list:
-        self.db.execute(f"select * from {query}", args)
+        self.execute(f"select * from {query}", args)
         return [{next(title.__iter__()): data
                 for title, data in zip(self.db.cursor.description, table)}
                 for table in self.db.cursor.fetchall()]
 
     def select(self, query: str, args=None) -> tuple:
-        self.db.execute(f"select {query}", args)
+        self.execute(f"select {query}", args)
         return self.db.cursor.fetchall()
 
     def delete(self, query: str, args=None):
-        self.db.execute_commit(f"delete from {query}", args)
+        self.execute_commit(f"delete from {query}", args)
 
 
 class BotInitTable(DBMethods):
@@ -43,7 +57,7 @@ class BotInitTable(DBMethods):
                "continuous_sign_times SMALLINT NOT NULL DEFAULT 0 COMMENT '连续签到次数'"
                ")")
         try:
-            self.db.execute(sql)
+            self.execute(sql)
             logger.info(f"{self.INFO_TABLE_NAME} 表初始化创建成功")
         except Warning:
             logger.warning(f"{self.INFO_TABLE_NAME} 表已存在，无需创建")
@@ -53,8 +67,6 @@ class BotDB(BotInitTable):
     __slots__ = ()
 
     def __init__(self, is_init):
-        self.execute = lambda query, args=None: self.db.execute(query, args)
-        self.execute_commit = lambda query, args=None: self.db.execute_commit(query, args)
         if is_init:
             self.init()
 
@@ -63,12 +75,21 @@ class BotDB(BotInitTable):
 
 
 def run(*, path: str = None, **kwargs):
-    DBMethods.db = MySQLdb(path=path or CONFIG_FILE, **kwargs)
+    if not DBMethods.db:
+        DBMethods.db = MySQLdb(path=path or CONFIG_FILE, **kwargs)
+    else:
+        logger.warning("请勿重复启动数据库！")
 
 
 def get_bot_db(is_init: bool = False) -> BotDB:
+    """
+    :param is_init: bool 是否对数据库进行初始化
+    """
     if DBMethods.db:
         return BotDB(is_init)
     logger.error("数据库未运行！！！")
 
 
+export.run = run
+export.info_table = INFO_TABLE_NAME
+export.get_bot_db = get_bot_db
