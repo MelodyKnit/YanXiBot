@@ -4,6 +4,7 @@
 <div align="center">
 <img src="https://img.shields.io/badge/python-3.8+-blue" alt="python">
 <img src="https://img.shields.io/badge/nonebot2-red" alt="nonebot">
+<img src="https://count.getloli.com/get/@melodyknit">
 <br/>
 </div>
 
