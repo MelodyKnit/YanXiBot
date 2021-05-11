@@ -1,15 +1,17 @@
 from nonebot.rule import T_State
 from nonebot import on_command
-from nonebot.adapters.cqhttp import Bot, GroupMessageEvent
+from nonebot.adapters.cqhttp import Bot, GroupMessageEvent, Event
 from .data_source import get_anime_res, ReplyMessage
 
 
-anime_res = on_command("资源", aliases={"动漫资源"})
+async def _is_group(bot: Bot, event: Event, state: T_State):
+    event: GroupMessageEvent
+    if "group_id" not in state:
+        state["group_id"] = event.group_id
+    return state["group_id"] == event.group_id
 
 
-async def this_group(event, state):
-    if state["group_id"] != event.group_id:
-        await anime_res.reject()
+anime_res = on_command("资源", rule=_is_group, aliases={"动漫资源"})
 
 
 @anime_res.handle()
@@ -26,7 +28,6 @@ async def anime_res_handle(bot: Bot, event: GroupMessageEvent, state: T_State):
 
 @anime_res.got("msg")
 async def anime_res_got(bot: Bot, event: GroupMessageEvent, state: T_State):
-    await this_group(event, state)
     text = event.get_plaintext()
     if state["res"]:
         await state["res"].reply_magnet(text)
