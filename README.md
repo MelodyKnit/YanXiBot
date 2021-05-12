@@ -9,7 +9,7 @@
 
 <h3 align="center">该项目还属于扩展阶段，会加入更多实用性高的插件，敬请期待</h3>
 
-## 快速部署
+## 部署
 ```shell
 git close https://www.github.com/melodyknit/YanXiBot
 cd YanXiBot
@@ -17,7 +17,5 @@ pip install -r requirements.txt
 nb run
 ```
 
-### 配置MySQL数据库
-```shell
-vim config/mysql.json
-```
+## 配置
+配置项参考 [.env 文件](./.env)
