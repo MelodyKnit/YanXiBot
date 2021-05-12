@@ -22,5 +22,4 @@ async def chat_handle(bot: Bot, event: MessageEvent):
     if str(event.message):
         msg = await get_message_reply(str(event.message))
         await chat.finish(msg)
-    else:
-        await chat.finish("亲爱的怎么啦！有什么事吗？")
+    await chat.finish("亲爱的怎么啦！有什么事吗？")

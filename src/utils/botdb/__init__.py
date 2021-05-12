@@ -1,17 +1,18 @@
-from .config import *
+from .config import Config
 from nonebot.log import logger
 from .data_source import MySQLdb
 from nonebot.plugin import export
 from pymysql.err import IntegrityError
 
 export = export()
+config = Config()
 
 
 class DBMethods:
     """
     机器人操作数据库的方法
     """
-    INFO_TABLE_NAME = INFO_TABLE_NAME
+    INFO_TABLE = config.info_table_name
     db: MySQLdb = None
 
     def execute(self, query: str, args=None):
@@ -46,7 +47,7 @@ class DBMethods:
 
 class BotInitTable(DBMethods):
     def create_user_info_table(self):
-        sql = (f"CREATE TABLE IF NOT EXISTS {self.INFO_TABLE_NAME}("
+        sql = (f"CREATE TABLE IF NOT EXISTS {self.INFO_TABLE}("
                "qid BIGINT PRIMARY KEY COMMENT '用户QQid',"
                "nickname VARCHAR(16) COMMENT '用户名称',"
                "integral BIGINT NOT NULL DEFAULT 0 COMMENT '用户积分',"
@@ -58,9 +59,9 @@ class BotInitTable(DBMethods):
                ")")
         try:
             self.execute(sql)
-            logger.info(f"{self.INFO_TABLE_NAME} 表初始化创建成功")
+            logger.info(f"{self.INFO_TABLE} 表初始化创建成功")
         except Warning:
-            logger.warning(f"{self.INFO_TABLE_NAME} 表已存在，无需创建")
+            logger.warning(f"{self.INFO_TABLE} 表已存在，无需创建")
 
 
 class BotDB(BotInitTable):
@@ -74,9 +75,9 @@ class BotDB(BotInitTable):
         self.create_user_info_table()
 
 
-def run(*, path: str = None, **kwargs):
+def run():
     if not DBMethods.db:
-        DBMethods.db = MySQLdb(path=path or CONFIG_FILE, **kwargs)
+        DBMethods.db = MySQLdb()
     else:
         logger.warning("请勿重复启动数据库！")
 
@@ -91,5 +92,5 @@ def get_bot_db(is_init: bool = False) -> BotDB:
 
 
 export.run = run
-export.info_table = INFO_TABLE_NAME
 export.get_bot_db = get_bot_db
+

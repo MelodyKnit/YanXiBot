@@ -16,3 +16,8 @@ cd YanXiBot
 pip install -r requirements.txt
 nb run
 ```
+
+### 配置MySQL数据库
+```shell
+vim config/mysql.json
+```

@@ -3,7 +3,6 @@ from nonebot import get_driver
 from nonebot import require
 from typing import Union
 
-
 from .config import Config
 
 

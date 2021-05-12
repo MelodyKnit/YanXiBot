@@ -14,6 +14,7 @@ __config__/
 
 # Distribution / packaging
 .Python
+.env.*
 build/
 develop-eggs/
 dist/

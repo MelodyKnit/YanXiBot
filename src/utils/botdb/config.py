@@ -1,4 +1,9 @@
-CONFIG_FILE = "mysql.json"
-# 配置文件名
-INFO_TABLE_NAME = "user_info"
-# 用户消息表名
+from pydantic import BaseSettings
+
+
+class Config(BaseSettings):
+    # Your Config Here
+    info_table_name: str = "user_info"
+
+    class Config:
+        extra = "ignore"

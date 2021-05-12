@@ -1,5 +1,4 @@
 from pydantic import BaseSettings
-from pprint import pprint
 
 
 class Config(BaseSettings):
