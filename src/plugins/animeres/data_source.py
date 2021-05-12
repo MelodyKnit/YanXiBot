@@ -54,16 +54,15 @@ class AnimeRes:
         :return dict 返回番剧
         """
         html = self.html.find(id="data_list")
+        data = {}
         if html and not html.find_all("tr", {"class", "text_center"}):
-            data = {}
             for tr in html.find_all("tr"):
                 value = get_key_info(tr)
                 if value["type"] in data.keys():
                     data[value["type"]].append(value)
                 else:
                     data[value["type"]] = [value]
-            return data
-        return None
+        return data
 
     @classmethod
     async def get_magnet(cls, href: str) -> str:
