@@ -1,25 +1,24 @@
 import os
-from .config import *
-from json import loads
+from .config import Config
 from aiofile import async_open
 from nonebot.plugin import export
 
 export = export()
+config = Config()
 slash = "/" if "/" in __file__ else "\\"
 path = os.path.dirname(__file__).split(slash)
-path = path[:path.index(DIR_NAME)]
+path = path[:path.index(config.dir_name)]
 
 
-def get_test_dir(args: list, dir_name: str) -> list:
+def get_dir(dir_name: str) -> list:
     """
     辨别是否是测试目录 __目录__ 带双下划线的目录为编写时候的测试目录
-    :param args:  list 目录需要为拆分为 list
     :param dir_name: 目录名
     :return: 返回拼接后的目录
     """
-    if not os.path.isdir(slash.join([*args, f"__{dir_name}__"])):
-        return [*args, dir_name]
-    return [*args, f"__{dir_name}__"]
+    if not os.path.isdir(slash.join([*path, f"__{dir_name}__"])):
+        return [*path, dir_name]
+    return [*path, f"__{dir_name}__"]
 
 
 async def read_file(file_path: str):
@@ -30,15 +29,15 @@ async def read_file(file_path: str):
         return None
 
 
-async def read_data(file_name: str):
-    return await read_file(slash.join([*DATA_DIR_NAME, file_name]))
+def read_path(file_path: list) -> read_file:
+    async def _read_file(file_name):
+        return await read_file(slash.join([*file_path, file_name]))
+    return _read_file
 
 
-async def read_config(file_name: str) -> dict:
-    return await read_file(slash.join([*CONFIG_DIR_NAME, file_name]))
-
-
-DATA_DIR_NAME = get_test_dir(path, DATA_DIR_NAME)
-CONFIG_DIR_NAME = get_test_dir(path, CONFIG_DIR_NAME)
-export.read_data = read_data
-export.read_config = read_config
+# dir name
+DATA_DIR_NAME = get_dir(config.data_dir_name)
+CONFIG_DIR_NAME = get_dir(config.config_dir_name)
+# export
+export.read_data = read_path(DATA_DIR_NAME)
+export.read_config = read_path(CONFIG_DIR_NAME)
