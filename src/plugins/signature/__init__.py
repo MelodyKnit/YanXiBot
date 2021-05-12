@@ -1,9 +1,9 @@
 from nonebot.adapters.cqhttp import Bot, GroupMessageEvent
-from nonebot import on_command, on_regex
+from nonebot import on_command
 from .data_source import SignIn
 
-sign_in = on_regex(r"^[签到]$")
-sign_query = on_regex(r"^查询$")
+sign_in = on_command("签到")
+sign_query = on_command("查询", aliases={"状态"})
 
 
 @sign_in.handle()

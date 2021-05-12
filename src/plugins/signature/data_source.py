@@ -73,8 +73,7 @@ class SignIn(Methods):
         else:
             self.add_integral(number, True)
         self.user_info["sign_number_times"] += 1
-        self.user_info["continuous_sign_times"] += 1
-        return (f"签到成功今日获得{number}{self.merge}\n"
+        return (f"好啦好啦，给你签到啦！今日获得{number}{self.merge}"
                 f"[{ADD_INTEGRAL_NUMBER}][连续{self.user_info['continuous_sign_times']}]")
 
     def sign_in_full(self) -> Union[int, None]:
