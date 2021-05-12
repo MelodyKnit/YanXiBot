@@ -4,9 +4,9 @@
 <pre>
 <code>
 ├─config
-│  └─files.json
+│  └─file
 ├─data
-│  └─files.json
+│  └─file
 └─src
 </code>
 </pre>
@@ -17,8 +17,8 @@ export = export("readfile")
 read_data = export.read_data
 read_config = export.read_config
 ```
-读取后会返回dict
+读取后会返回文件数据
 ```python
-read_data("file.json")
+await read_data("file")
 ```
 
