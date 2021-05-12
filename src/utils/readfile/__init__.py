@@ -1,6 +1,7 @@
 import os
 from .config import *
 from json import loads
+from aiofile import async_open
 from nonebot.plugin import export
 
 export = export()
@@ -21,23 +22,30 @@ def get_test_dir(args: list, dir_name: str) -> list:
     return [*args, f"__{dir_name}__"]
 
 
-def read_file(file_path):
+async def read_file(file_path: str):
     try:
-        with open(file_path, mode="r") as file:
-            return file.read()
+        async with async_open(file_path, mode="r") as file:
+            return await file.read()
     except FileNotFoundError:
         return None
 
 
-def read_data(file_name: str):
-    return read_file(slash.join([*DATA_DIR_NAME, file_name]))
+async def read_data(file_name: str):
+    return await read_file(slash.join([*DATA_DIR_NAME, file_name]))
 
 
-def read_config(file_name: str) -> dict:
-    return loads(read_file(slash.join([*CONFIG_DIR_NAME, file_name])) or {})
+async def read_config(file_name: str) -> dict:
+    return await read_file(slash.join([*CONFIG_DIR_NAME, file_name]))
 
 
-export.read_data = read_data
-export.read_config = read_config
+def read_files(file_path):
+    return read_data()
+
+(lambda x: x)(1)
+
 DATA_DIR_NAME = get_test_dir(path, DATA_DIR_NAME)
 CONFIG_DIR_NAME = get_test_dir(path, CONFIG_DIR_NAME)
+export.read_data = read_data
+export.read_config = read_config
+export.data_path = slash.join(*DATA_DIR_NAME)
+export.config_path = slash.join(*DATA_DIR_NAME)
