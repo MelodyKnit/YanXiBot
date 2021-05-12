@@ -21,7 +21,6 @@ async def separate_trigger(bot: Bot, event: Event, state: T_State):
         if state["event"] is not event:
             return False
     if isinstance(event, GroupMessageEvent):
-        event: GroupMessageEvent
         if "group_id" not in state:
             state["group_id"] = event.group_id
         return state["group_id"] == event.group_id
