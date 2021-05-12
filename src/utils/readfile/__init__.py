@@ -38,14 +38,7 @@ async def read_config(file_name: str) -> dict:
     return await read_file(slash.join([*CONFIG_DIR_NAME, file_name]))
 
 
-def read_files(file_path):
-    return read_data()
-
-(lambda x: x)(1)
-
 DATA_DIR_NAME = get_test_dir(path, DATA_DIR_NAME)
 CONFIG_DIR_NAME = get_test_dir(path, CONFIG_DIR_NAME)
 export.read_data = read_data
 export.read_config = read_config
-export.data_path = slash.join(*DATA_DIR_NAME)
-export.config_path = slash.join(*DATA_DIR_NAME)
