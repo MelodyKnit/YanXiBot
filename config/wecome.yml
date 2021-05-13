@@ -1,20 +1,34 @@
 ---
 # 随机回复消息
 Random:
-  kick: false
-  increase: false
-  decrease: false
-
-
-# 群成员踢出消息
-KickMessage:
-  - ""
+  IncreaseMessage: false
+  DecreaseMessage: false
 
 # 群成员加入消息
 IncreaseMessage:
-  - ""
+#  批准
+  approve:
+    - ""
+#  邀请
+  invite:
+    - ""
+#  将以上消息合并只用下列消息回复
+#  不合并传入 false
+#  合并如上用 - 写入回复数据
+  merge: # 一旦开始合并以上将不再生效
+    - "{at}欢迎{name}加入，你已经是gay了，快来和大家聊天吧！"
 
 # 群成员退出消息
 DecreaseMessage:
-  - ""
+#  离开
+  leave:
+    - ""
+#  踢出
+  kick:
+    - ""
+#  将以上消息合并只用下列消息回复
+#  不合并传入 false
+#  合并如上用 - 写入回复数据
+  merge:
+    - "{uid}离开了我们，默哀三秒！"
 ...
