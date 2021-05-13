@@ -1,7 +1,13 @@
 import aiohttp
 from json import loads
+from nonebot import require
+from .config import Config
+from random import choice
 
+
+config = Config()
 base_url = "http://i.itpk.cn/api.php"
+read_data = require("readfile").read_data
 
 
 def get_params(msg: str):
@@ -24,4 +30,31 @@ async def get_message_reply(msg: str):
                     return "抱歉，为对数据进行整理目前无法使用"
             except ValueError:
                 return await resp.text()
+
+
+async def data_in_msg(msg: str):
+    data = await read_data(config.data_path)
+    data = loads(data)
+    for i in data:
+        if i in msg:
+            return choice(data[msg])
+
+
+class ChatMessageReply:
+    __slots__ = ("msg",)
+    _reply = [
+        data_in_msg,
+        get_message_reply
+    ]
+
+    def __init__(self, msg: str):
+        self.msg = msg
+
+    async def reply(self):
+        for i in self._reply:
+            msg = await i(self.msg)
+            if msg:
+                print(msg)
+                return msg
+
 
