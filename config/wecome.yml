@@ -1,0 +1,20 @@
+---
+# 随机回复消息
+Random:
+  kick: false
+  increase: false
+  decrease: false
+
+
+# 群成员踢出消息
+KickMessage:
+  - ""
+
+# 群成员加入消息
+IncreaseMessage:
+  - ""
+
+# 群成员退出消息
+DecreaseMessage:
+  - ""
+...
