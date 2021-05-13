@@ -46,7 +46,7 @@
         </tr>
     </tbody>
 </table>
-<table align="center">
+<table>
     <thead>
         <tr>
             <td colspan="2" align="center">DecreaseMessage</td>
