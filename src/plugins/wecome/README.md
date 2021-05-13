@@ -8,7 +8,7 @@
 ## 格式化字符
 可在[wecome](../../config/wecome.yml)回复消息时加入格式字符<br>
 如：{at}欢迎{name}加入本群
-<div align="center">
+<div>
 <table>
     <thead>
         <tr>
