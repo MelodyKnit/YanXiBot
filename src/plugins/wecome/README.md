@@ -3,10 +3,10 @@
 对群成员加入与退出做出相应回复
 
 ## 配置
-对于群员加入与退出请参考：[wecome](../../config/wecome.yml)
+对于群员加入与退出请参考：[wecome](../../../config/wecome.yml)
 
 ## 格式化字符
-可在[wecome](../../config/wecome.yml)回复消息时加入格式字符<br>
+可在[wecome](../../../config/wecome.yml)回复消息时加入格式字符<br>
 如：{at}欢迎{name}加入本群
 <div>
 <table>
