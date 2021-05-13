@@ -37,7 +37,7 @@ async def data_in_msg(msg: str):
     data = loads(data)
     for i in data:
         if i in msg:
-            return choice(data[msg])
+            return choice(data[i])
 
 
 class ChatMessageReply:

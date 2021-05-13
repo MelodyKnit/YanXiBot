@@ -15,7 +15,7 @@ class DBMethods:
     INFO_TABLE = config.info_table_name
     db: MySQLdb = None
 
-    def execute(self, query: str, args=None):
+    def execute(self, query: str, args: list = None):
         self.db.cursor.execute(query, args)
 
     def execute_commit(self, query: str, args=None):
@@ -92,5 +92,6 @@ def get_bot_db(is_init: bool = False) -> BotDB:
 
 
 export.run = run
+export.info_table = config.info_table_name
 export.get_bot_db = get_bot_db
 
