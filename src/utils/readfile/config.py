@@ -9,8 +9,3 @@ class Config(BaseSettings):
 
     class Config:
         extra = "ignore"
-
-
-DIR_NAME = "src"
-DATA_DIR_NAME = "data"
-CONFIG_DIR_NAME = "config"
