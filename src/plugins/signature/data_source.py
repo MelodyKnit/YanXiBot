@@ -34,7 +34,6 @@ class Methods:
         查看是否有该用户信息，如果没有则添加该用户然后进行一次递归
         :return 然后用户信息
         """
-        print(f"{INFO_TABLE_NAME} where qid=%s" % [self.user_id])
         user_info = bot_db.select_all(f"{INFO_TABLE_NAME} where qid=%s", [self.user_id])
         if user_info:
             return user_info[0]
