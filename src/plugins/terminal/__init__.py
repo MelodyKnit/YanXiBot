@@ -1,7 +1,7 @@
-from subprocess import Popen, PIPE, STDOUT
 from nonebot import on_command
 from nonebot.permission import SUPERUSER
-from nonebot.adapters.cqhttp import Bot, MessageEvent, exception
+from subprocess import Popen, PIPE, STDOUT
+from nonebot.adapters.cqhttp import Bot, MessageEvent
 
 terminal = on_command("cmd", permission=SUPERUSER)
 
@@ -21,4 +21,3 @@ async def terminal_handle(bot: Bot, event: MessageEvent):
             with p:
                 output = decode(p.stdout.read())
         await terminal.finish(output)
-
