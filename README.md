@@ -19,3 +19,20 @@ nb run
 
 ## 配置
 配置项参考 [.env 文件](./.env)
+
+## 实现功能
+
+- [x] [聊天](src/plugins/chat)
+- [x] [获取动漫资源](src/plugins/animeres)
+- [x] [签到系统](src/plugins)
+- [x] [加入/退出群词](src/plugins/wecome)
+
+## 预计新增
+
+- [ ] BiliBili投稿视频信息
+- [ ] BiliBili番剧动态
+- [ ] 动漫图片识别
+- [ ] 番剧图片识别
+- [ ] 好感度系统
+- [ ] 养成系统
+- [ ] 商店系统
