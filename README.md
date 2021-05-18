@@ -23,7 +23,7 @@ nb run
 ## 实现功能
 
 - [x] [聊天](src/plugins/chat)
-- [x] [获取动漫资源](src/plugins/animeres)
+- [x] [获取动漫资源](src/plugins/animeres)(主打特色)
 - [x] [签到系统](src/plugins)
 - [x] [加入/退出群词](src/plugins/wecome)
 
