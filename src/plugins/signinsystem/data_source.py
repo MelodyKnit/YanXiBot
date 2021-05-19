@@ -2,7 +2,6 @@ from nonebot import require
 from datetime import datetime
 from yaml import load, FullLoader
 from .config import Config
-from pprint import pprint
 
 
 config = Config()
@@ -31,9 +30,9 @@ class GetUserInfo:
     table = "user_info"
     __slots__ = ("user_id", "group_id", "user_info", "_is_push", "config")
 
-    def __init__(self, qid: int, gid: int):
+    def __init__(self, qid: int, gid: int = 0):
         self.user_id = qid
-        self.group_id = gid
+        self.group_id = gid or 0
         self.user_info = {}
         self._is_push = False
         self.config = {}
@@ -41,22 +40,21 @@ class GetUserInfo:
     async def __user_info(self):
         user_info = await bot_db.select(self.table, where={"qid": self.user_id})
         if not user_info:
-            await bot_db.insert(qid=self.user_id, first_group=self.group_id)
-            user_info = await bot_db.select(self.table, where={"qid": self.user_id})
-        self.user_info = user_info[0]
+            await bot_db.insert(self.table, qid=self.user_id, first_group=self.group_id)
+            return await self.__user_info()
+        return user_info[0]
 
     async def __aenter__(self):
-        await self.__user_info()
+        self.user_info = await self.__user_info()
         self.config = load(await read_config(config.file_path), Loader=FullLoader)
         return self
 
     async def __aexit__(self, *args):
         if self._is_push:
-            pprint(self.user_info)
             await bot_db.update(self.table, **self.user_info, where={"qid": self.user_id})
 
 
-class SignIn(GetUserInfo):
+class SetUserInfo(GetUserInfo):
     __slots__ = ()
 
     def _set_frequency(self) -> bool:
@@ -81,21 +79,23 @@ class SignIn(GetUserInfo):
             self.user_info["repeats"] = 0
             return True
         # 重复签到递增
-        self.user_info["repeats"] += 1
+        else:
+            self.user_info["repeats"] += 1
         return False
 
     def _set_integral(self) -> int:
         """
+        :详细:
         设置增加integral的数量
+        初始增加数量 + 连续签到最大天数以内的天数 * 连续签到所加的数量
 
         :returns:
             共计增加的数量
         """
-        cont = self.user_info["continuous"]
-        max_day = self.config["continuous"]["max_day"]
-        cont = cont if cont < max_day else max_day
-
-        num = self.config["integral"] + cont * self.config["continuous"]["increase"]
+        num = self.config["integral"] + min(
+            # 判断是否超出最大天数，如果超出则选择最大天数
+            self.user_info["continuous"], self.config["continuous"]["max_day"]
+        ) * self.config["continuous"]["increase"]
         self.user_info["integral"] += num
         return num
 
@@ -115,13 +115,27 @@ class SignIn(GetUserInfo):
         __type = min(self.user_info[config.reply_basis[__type]], len(msgs) - 1)
         return msgs[__type]
 
-    async def sign_in(self):
+
+class SignIn(SetUserInfo):
+    __slots__ = ()
+
+    def sign_in(self):
         self._is_push = True
         if self._set_frequency():
             self.user_info["sign_group"] = self.group_id
             self.user_info["sign_time"] = datetime.today()
-            num = self._set_integral()
             return self._format_reply(self._reply_msg("reply_true"), {
-                "get_integral": num
+                "get_integral": self._set_integral()
             })
         return self._format_reply(self._reply_msg("reply_false"))
+
+    def query(self) -> str:
+        msg = [self._format_reply(txt, {
+            "is_day_login": "未签到" if get_days(self.user_info["sign_time"]) else "已签到 √",
+            "meets": -get_days(self.user_info["create_time"])
+        }) for txt in self.config["reply_query"]]
+        num = max([len(i.encode("gbk")) for i in msg]) * 2
+        msg = "\n".join(msg)
+        return f"┌{' ' * num}┐\n{msg}\n└{' ' * num}┘"
+
+
