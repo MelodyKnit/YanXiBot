@@ -40,7 +40,7 @@ class GetUserInfo:
     async def __user_info(self):
         user_info = await bot_db.select(self.table, where={"qid": self.user_id})
         if not user_info:
-            await bot_db.insert(self.table, qid=self.user_id, first_group=self.group_id)
+            await bot_db.insert(self.table, qid=self.user_id, sign_group=self.group_id)
             return await self.__user_info()
         return user_info[0]
 
@@ -92,8 +92,8 @@ class SetUserInfo(GetUserInfo):
         :returns:
             共计增加的数量
         """
+        # 判断是否超出最大天数，如果超出则选择最大天数
         num = self.config["integral"] + min(
-            # 判断是否超出最大天数，如果超出则选择最大天数
             self.user_info["continuous"], self.config["continuous"]["max_day"]
         ) * self.config["continuous"]["increase"]
         self.user_info["integral"] += num
@@ -110,7 +110,7 @@ class SetUserInfo(GetUserInfo):
 
     def _reply_msg(self, __type: str) -> str:
         # 获取回复消息
-        msgs: list = self.config[__type]
+        msgs = self.config[__type]
         # 用户信息里面抽取回复消息对应数据库的某项数据，然后与消息数量做取值，取最小值
         __type = min(self.user_info[config.reply_basis[__type]], len(msgs) - 1)
         return msgs[__type]
@@ -131,10 +131,10 @@ class SignIn(SetUserInfo):
 
     def query(self) -> str:
         msg = [self._format_reply(txt, {
-            "is_day_login": "未签到" if get_days(self.user_info["sign_time"]) else "已签到 √",
+            "is_day_login": "未签到" if get_days(self.user_info["sign_time"]) else "已签到",
             "meets": -get_days(self.user_info["create_time"])
         }) for txt in self.config["reply_query"]]
-        num = max([len(i.encode("gbk")) for i in msg]) * 2
+        num = int(max([len(i.encode("gbk")) for i in msg]) * 1.8)
         msg = "\n".join(msg)
         return f"┌{' ' * num}┐\n{msg}\n└{' ' * num}┘"
 

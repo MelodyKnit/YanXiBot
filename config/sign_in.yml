@@ -33,3 +33,14 @@ reply_false:
   - "好啦好啦我怕你了行了吧！~>_<~"
   - "你再骚扰我就..."
   - ""
+
+# 会将消息由上至下合并发送
+reply_query:
+  - "  今日签到：{is_day_login}"
+  - "  {name}：{integral}{unit}"
+  - "  称呼：{nickname}"
+  - "  好感度：{liking}"
+  - "  与您相识：{meets}天"
+  - "  累计签到：{signs}次"
+  - "  连续签到：{continuous}天"
+  - "  本月累计：{month_signs}次"

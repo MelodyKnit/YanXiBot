@@ -30,5 +30,5 @@ DecreaseMessage:
 #  不合并传入 false
 #  合并如上用 - 写入回复数据
   merge:
-    - ""
+    - "{uid}离开了我们，默哀三秒！"
 ...
