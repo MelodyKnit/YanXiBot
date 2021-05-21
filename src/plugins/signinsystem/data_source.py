@@ -1,6 +1,8 @@
+from random import choice
 from nonebot import require
 from datetime import datetime
 from yaml import load, FullLoader
+from typing import Union
 from .config import Config
 
 
@@ -115,6 +117,15 @@ class SetUserInfo(GetUserInfo):
         __type = min(self.user_info[config.reply_basis[__type]], len(msgs) - 1)
         return msgs[__type]
 
+    @staticmethod
+    def random_msg(msgs: Union[list, str]) -> str:
+        """
+        随机消息
+        :returns:
+        随机选择一条消息
+        """
+        return msgs if isinstance(msgs, str) else choice(msgs)
+
 
 class SignIn(SetUserInfo):
     __slots__ = ()
@@ -130,12 +141,10 @@ class SignIn(SetUserInfo):
         return self._format_reply(self._reply_msg("reply_false"))
 
     def query(self) -> str:
-        msg = [self._format_reply(txt, {
+        msg = [self._format_reply(self.random_msg(txt), {
             "is_day_login": "未签到" if get_days(self.user_info["sign_time"]) else "已签到",
             "meets": -get_days(self.user_info["create_time"])
         }) for txt in self.config["reply_query"]]
         num = int(max([len(i.encode("gbk")) for i in msg]) * 1.8)
         msg = "\n".join(msg)
         return f"┌{' ' * num}┐\n{msg}\n└{' ' * num}┘"
-
-

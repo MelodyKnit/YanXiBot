@@ -23,7 +23,6 @@ class MySQLdbMethods:
         await self.cur.execute(query, param)
 
     async def execute_commit(self, query: str, param: list = None):
-        print(query)
         try:
             await self.cur.execute(query, param)
             await self._conn.commit()
@@ -46,7 +45,7 @@ class MySQLdbMethods:
             logger.error("数据库连接失败！请检查配置文件是否输入有误！\n%s" % err)
         except Error as err:
             logger.error("数据库连接失败！\n%s" % err)
-        finally:
+        else:
             logger.info("成功与MySQL数据库建立连接！")
             await cls._init()
 
