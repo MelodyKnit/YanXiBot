@@ -1,5 +1,5 @@
 from aiomysql import connect, Warning, Connection, Cursor, \
-    IntegrityError, OperationalError, Error
+    IntegrityError, InternalError, OperationalError, Error
 from nonebot import get_driver, require
 from warnings import filterwarnings
 from nonebot.log import logger
@@ -33,34 +33,23 @@ class MySQLdbMethods:
         return self.cur.fetchall()
 
     @classmethod
-    async def run(cls):
+    async def connect(cls):
         """
-        启动数据库
+        与数据库建立连接
         """
         try:
             cls._conn = await connect(**cls.config)
             cls.cur = await cls._conn.cursor()
-            cls.is_run = True
-        except OperationalError as err:
-            logger.error("数据库连接失败！请检查配置文件是否输入有误！\n%s" % err)
-        except Error as err:
-            logger.error("数据库连接失败！\n%s" % err)
-        else:
             logger.info("成功与MySQL数据库建立连接！")
-            await cls._init()
+        except OperationalError as err:
+            logger.error("数据库连接失败！请检查配置文件是否输入有误！")
+            assert False, err
+        return True
 
     @classmethod
-    async def close(cls):
+    async def init_table(cls):
         """
-        关闭数据库
-        """
-        await cls.cur.close()
-        cls._conn.close()
-
-    @classmethod
-    async def _init(cls):
-        """
-        进行初始化数据库建立数据表
+        进行初始化建立数据表
         """
         if driver.config.mysql_init:
             try:
@@ -69,6 +58,31 @@ class MySQLdbMethods:
                 logger.info("数据表初始化建立成功！")
             except Warning:
                 logger.warning("数据表已建立，无需重复建立，请忽略该Warning，如需停止Warning请更改配置文件中的mysql_init=false")
+            except InternalError as err:
+                logger.error("数据表创建失败，请检查并更新数据库！")
+                assert False, err
+        return True
+
+    @classmethod
+    async def run(cls):
+        """
+        启动数据库
+        """
+        try:
+            await cls.connect()
+            await cls.init_table()
+        except AssertionError as err:
+            logger.error(err)
+        else:
+            cls.is_run = True
+
+    @classmethod
+    async def close(cls):
+        """
+        关闭数据库
+        """
+        await cls.cur.close()
+        cls._conn.close()
 
 
 driver.on_startup(MySQLdbMethods.run)

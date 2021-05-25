@@ -21,7 +21,7 @@ def kwargs_str(kws: dict) -> str:
     return ",".join(args)
 
 
-def key_value(kws: dict) -> tuple[str, str]:
+def key_value(kws: dict):
     return args_str(kws.keys()), args_str(kws.values())
 
 
