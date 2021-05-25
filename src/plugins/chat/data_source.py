@@ -34,7 +34,6 @@ async def get_message_reply(msg: str):
 
 async def data_in_msg(msg: str):
     data = await read_data(config.data_path)
-    data = loads(data)
     for i in data:
         if i in msg:
             return choice(data[i])
@@ -54,7 +53,4 @@ class ChatMessageReply:
         for i in self._reply:
             msg = await i(self.msg)
             if msg:
-                print(msg)
                 return msg
-
-

@@ -13,19 +13,19 @@ config = Config(**global_config.dict())
 scheduler = require("nonebot_plugin_apscheduler").scheduler
 
 
-@driver.on_bot_connect
-async def _(bot: Bot):
-    global bot_me
-    bot_me = bot
-
-
-@driver.on_bot_disconnect
-async def _(bot: Bot):
-    global bot_me
-    bot_me = None
-
-
-@scheduler.scheduled_job('cron', second='*')
-async def _():
-    if bot_me:
-        ...
+# @driver.on_bot_connect
+# async def _(bot: Bot):
+#     global bot_me
+#     bot_me = bot
+#
+#
+# @driver.on_bot_disconnect
+# async def _(bot: Bot):
+#     global bot_me
+#     bot_me = None
+#
+#
+# @scheduler.scheduled_job('cron', second='*')
+# async def _():
+#     if bot_me:
+#         ...

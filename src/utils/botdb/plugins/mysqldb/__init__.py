@@ -1,4 +1,4 @@
-from typing import Iterable, Union
+from typing import Iterable
 from .data_source import MySQLdbMethods
 from typing import Union
 

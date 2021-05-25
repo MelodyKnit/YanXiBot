@@ -3,7 +3,6 @@ from random import choice
 from .config import Config
 from nonebot import require
 from datetime import datetime
-from yaml import load, FullLoader
 from nonebot.adapters.cqhttp import Bot, GroupIncreaseNoticeEvent, GroupDecreaseNoticeEvent,\
     Message, MessageSegment
 
@@ -22,7 +21,6 @@ class ReplyMessage:
 
     async def set_config(self):
         self.config = await read_config(config.file_path)
-        self.config = load(self.config, Loader=FullLoader)
 
     # 需要格式化字符
     async def format_keys(self, more: dict = None) -> dict:

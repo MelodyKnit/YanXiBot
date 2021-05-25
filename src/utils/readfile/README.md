@@ -22,3 +22,30 @@ read_config = export.read_config
 await read_data("file")
 ```
 
+## 特性
+read_json与read_data具备区分文件后缀的文件类型然后进行load
+
+目前支持.json与.yml后缀
+
+```json
+[
+  {
+    "name": "bob",
+    "sex": "man"
+  }
+]
+```
+例如读取如上json文件假设名为user.json
+```python
+value = await read_config("user.json")
+print(value[0]["name"])
+```
+可以用如上写法
+
+若不想使用该特性可以在函数后面加上False参数
+```python
+value = await read_config("user.json", False)
+print(value)
+# print(value[0]["name"]) 会报错
+```
+

@@ -1,19 +1,7 @@
 from nonebot.rule import to_me
-from nonebot import get_driver, on_message
+from nonebot import on_message
 from nonebot.adapters.cqhttp import Bot, MessageEvent
-# from .config import Config
-
-# ------------------------------
-
 from .data_source import get_message_reply, ChatMessageReply
-
-# ------------------------------
-#
-# global_config = get_driver().config
-# config = Config(**global_config.dict())
-
-# ------------------------------
-
 chat = on_message(rule=to_me())
 
 
