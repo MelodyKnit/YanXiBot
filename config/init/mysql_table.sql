@@ -1,4 +1,3 @@
---如果对MySQL表名字或类型有所更改，请手手动进行ALTER
 CREATE TABLE IF NOT EXISTS user_info (
     qid BIGINT PRIMARY KEY COMMENT '用户QQid',
     nickname VARCHAR(16) NOT NULL DEFAULT "您" COMMENT '用户名称',

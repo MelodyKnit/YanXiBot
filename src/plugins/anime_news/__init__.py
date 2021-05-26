@@ -8,9 +8,8 @@
 """
 
 from nonebot import require, get_driver
-from datetime import datetime
 from nonebot.adapters.cqhttp import Bot
-from .data_source import anime_news
+from .data_source import AnimeNews
 scheduler = require("nonebot_plugin_apscheduler").scheduler
 read_config = require("readfile").read_config
 
@@ -23,9 +22,10 @@ def reply_message(message):
 
 
 async def news(bot: Bot, group_ids: list):
-    __news = await anime_news()
+    anime_news = await AnimeNews()
     for group_id in group_ids:
-        await bot.send_group_msg(group_id=group_id, message=reply_message(__news))
+        await bot.send_group_msg(group_id=group_id, message=reply_message(anime_news.update()))
+        await bot.send_group_msg(group_id=group_id, message=reply_message(anime_news.ranking()))
 
 
 @driver.on_bot_connect

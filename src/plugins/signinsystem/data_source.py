@@ -48,7 +48,7 @@ class GetUserInfo:
 
     async def __aenter__(self):
         self.user_info = await self.__user_info()
-        self.config = load(await read_config(config.file_path), Loader=FullLoader)
+        self.config = await read_config(config.file_path)
         return self
 
     async def __aexit__(self, *args):
