@@ -48,6 +48,7 @@ class MySQLdbMethods(DBHook):
         except RuntimeError:
             await self.cur.close()
             self.cur = await self._conn.cursor()
+            await self.cur.execute(query, param)
 
     async def execute_commit(self, query: str, param: list = None):
         try:
