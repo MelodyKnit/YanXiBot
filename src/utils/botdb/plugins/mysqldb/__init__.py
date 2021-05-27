@@ -90,3 +90,9 @@ class SQLMethods(MySQLdbMethods):
         await self.execute(sql)
         title = [next(i.__iter__()) for i in self.cur.description]
         return [{t: v for t, v in zip(title, r)} for r in self.fetchall().result()]
+
+
+__all__ = [
+    "SQLMethods",
+    "MySQLdbMethods"
+]

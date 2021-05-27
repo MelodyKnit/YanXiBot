@@ -1,5 +1,6 @@
 from nonebot import export
 from .plugins.mysqldb import SQLMethods
+from .plugins import on_bot_db_run, on_bot_db_stop
 
 
 class BotDBMethods:
@@ -30,3 +31,5 @@ class BotDBMethods:
 
 export = export()
 export.BotDBMethods = BotDBMethods
+export.on_bot_db_run = on_bot_db_run
+export.on_bot_db_stop = on_bot_db_stop

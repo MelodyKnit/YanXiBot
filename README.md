@@ -24,13 +24,13 @@ nb run
 
 - [x] [聊天](src/plugins/chat)
 - [x] [获取动漫资源](src/plugins/animeres)(主打特色)
-- [x] [签到系统](src/plugins)
+- [x] [签到系统](src/plugins)(依赖[botdb](src/utils/botdb)插件)
 - [x] [加入/退出群词](src/plugins/wecome)
+- [x] [最新番剧动态](src/plugins/anime_news)
 
 ## 预计新增
 
 - [ ] BiliBili投稿视频信息
-- [ ] BiliBili番剧动态
 - [ ] 动漫图片识别
 - [ ] 番剧图片识别
 - [ ] 好感度系统

@@ -1,5 +1,5 @@
 from aiomysql import connect, Warning, Connection, Cursor, \
-    IntegrityError, InternalError, OperationalError, Error
+    IntegrityError, InternalError, OperationalError
 from nonebot import get_driver, require
 from warnings import filterwarnings
 from nonebot.log import logger
@@ -12,7 +12,30 @@ read_config = require("readfile").read_config
 filterwarnings("error", category=Warning)
 
 
-class MySQLdbMethods:
+class DBHook:
+    _on_bot_db_run_event = []
+    _on_bot_db_stop_event = []
+
+    @classmethod
+    def on_bot_db_run(cls, func):
+        """注册一个在数据库连接成功后运行的函数"""
+        cls._on_bot_db_run_event.append(func)
+
+    @classmethod
+    def on_bot_db_stop(cls, func):
+        """注册一个在数据库断开停止后运行的函数"""
+        cls._on_bot_db_stop_event.append(func)
+
+    @classmethod
+    async def _bot_run_event(cls):
+        [await event() for event in cls._on_bot_db_run_event]
+
+    @classmethod
+    async def _bot_stop_event(cls):
+        [await event() for event in cls._on_bot_db_stop_event]
+
+
+class MySQLdbMethods(DBHook):
     __slots__ = ("_conn", "cur", "description")
     cur: Cursor
     is_run = False                  # 数据库是否启动
@@ -34,9 +57,7 @@ class MySQLdbMethods:
 
     @classmethod
     async def connect(cls):
-        """
-        与数据库建立连接
-        """
+        """与数据库建立连接"""
         try:
             cls._conn = await connect(**cls.config)
             cls.cur = await cls._conn.cursor()
@@ -48,9 +69,7 @@ class MySQLdbMethods:
 
     @classmethod
     async def init_table(cls):
-        """
-        进行初始化建立数据表
-        """
+        """进行初始化建立数据表"""
         if driver.config.mysql_init:
             try:
                 sql = await read_config(config.file_path)
@@ -65,9 +84,7 @@ class MySQLdbMethods:
 
     @classmethod
     async def run(cls):
-        """
-        启动数据库
-        """
+        """启动数据库"""
         try:
             await cls.connect()
             await cls.init_table()
@@ -75,15 +92,20 @@ class MySQLdbMethods:
             logger.error(err)
         else:
             cls.is_run = True
+            await cls._bot_run_event()
 
     @classmethod
     async def close(cls):
-        """
-        关闭数据库
-        """
-        await cls.cur.close()
-        cls._conn.close()
+        """关闭数据库"""
+        if cls.is_run:
+            await cls.cur.close()
+            cls._conn.close()
+            await cls._bot_stop_event()
 
 
 driver.on_startup(MySQLdbMethods.run)
 driver.on_shutdown(MySQLdbMethods.close)
+
+__all__ = [
+    "MySQLdbMethods"
+]
