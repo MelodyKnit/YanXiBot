@@ -43,11 +43,15 @@ class MySQLdbMethods(DBHook):
     config = driver.config.mysql    # mysql配置
 
     async def execute(self, query: str, param: list = None):
-        await self.cur.execute(query, param)
+        try:
+            await self.cur.execute(query, param)
+        except RuntimeError:
+            await self.cur.close()
+            self.cur = await self._conn.cursor()
 
     async def execute_commit(self, query: str, param: list = None):
         try:
-            await self.cur.execute(query, param)
+            await self.execute(query, param)
             await self._conn.commit()
         except IntegrityError:
             await self._conn.rollback()
