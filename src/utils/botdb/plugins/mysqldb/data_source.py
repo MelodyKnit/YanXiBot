@@ -1,5 +1,5 @@
 from aiomysql import connect, Warning, Connection, Cursor, \
-    IntegrityError, InternalError, OperationalError
+    IntegrityError, InternalError, OperationalError, Error
 from nonebot import get_driver, require
 from warnings import filterwarnings
 from nonebot.log import logger
@@ -46,8 +46,9 @@ class MySQLdbMethods(DBHook):
         try:
             await self.cur.execute(query, param)
         except RuntimeError:
-            await self.cur.close()
-            self.cur = await self._conn.cursor()
+            logger.warning("数据库连接超时，重新建立连接！")
+            await self.close()
+            await self.connect()
             await self.cur.execute(query, param)
 
     async def execute_commit(self, query: str, param: list = None):
@@ -63,14 +64,8 @@ class MySQLdbMethods(DBHook):
     @classmethod
     async def connect(cls):
         """与数据库建立连接"""
-        try:
-            cls._conn = await connect(**cls.config)
-            cls.cur = await cls._conn.cursor()
-            logger.info("成功与MySQL数据库建立连接！")
-        except OperationalError as err:
-            logger.error("数据库连接失败！请检查配置文件是否输入有误！")
-            assert False, err
-        return True
+        cls._conn = await connect(**cls.config)
+        cls.cur = await cls._conn.cursor()
 
     @classmethod
     async def init_table(cls):
@@ -88,28 +83,41 @@ class MySQLdbMethods(DBHook):
         return True
 
     @classmethod
-    async def run(cls):
-        """启动数据库"""
+    async def close(cls):
+        """关闭数据库"""
+        try:
+            await cls.cur.close()
+            cls._conn.close()
+        except Error as err:
+            logger.error("数据库断开出现错误")
+            logger.error(err)
+
+    @classmethod
+    async def start(cls):
+        """开启数据库"""
         try:
             await cls.connect()
+            logger.info("成功与MySQL数据库建立连接！")
             await cls.init_table()
         except AssertionError as err:
+            logger.error(err)
+        except OperationalError as err:
+            logger.error("数据库连接失败！请检查配置文件是否输入有误！")
             logger.error(err)
         else:
             cls.is_run = True
             await cls._bot_run_event()
 
     @classmethod
-    async def close(cls):
-        """关闭数据库"""
+    async def stop(cls):
+        """停止数据库"""
         if cls.is_run:
-            await cls.cur.close()
-            cls._conn.close()
+            await cls.close()
             await cls._bot_stop_event()
 
 
-driver.on_startup(MySQLdbMethods.run)
-driver.on_shutdown(MySQLdbMethods.close)
+driver.on_startup(MySQLdbMethods.start)
+driver.on_shutdown(MySQLdbMethods.stop)
 
 __all__ = [
     "MySQLdbMethods"
