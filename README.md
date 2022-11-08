@@ -11,7 +11,7 @@
 
 ## 部署
 ```shell
-git close https://www.github.com/melodyknit/YanXiBot
+git clone https://www.github.com/melodyknit/YanXiBot
 cd YanXiBot
 pip install -r requirements.txt
 nb run
