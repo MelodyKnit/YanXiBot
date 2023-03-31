@@ -1,17 +1,13 @@
-[tool.poetry]
+[project]
 name = "YanXiBot"
 version = "0.1.0"
 description = "YanXiBot"
-authors = []
 readme = "README.md"
+requires-python = ">=3.8, <4.0"
 
-[tool.poetry.dependencies]
-python = "^3.7"
-nonebot2 = "^2.0.0.a1"
-nb-cli = "^0.1.0"
-
-[tool.poetry.dev-dependencies]
-nonebot-test = "^0.1.0"
+[tool.nonebot]
+adapters = [{name = "OneBot V11", module_name = "nonebot.adapters.onebot.v11", project_link = "nonebot-adapter-onebot", desc = "OneBot V11 协议"}]
+plugins = ["nonebot_plugin_datastore"]
 
 [nonebot.plugins]
 plugins = ["nonebot_plugin_apscheduler"]
