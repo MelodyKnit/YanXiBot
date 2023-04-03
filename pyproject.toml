@@ -7,12 +7,10 @@ requires-python = ">=3.8, <4.0"
 
 [tool.nonebot]
 adapters = [{name = "OneBot V11", module_name = "nonebot.adapters.onebot.v11", project_link = "nonebot-adapter-onebot", desc = "OneBot V11 协议"}]
-plugins = ["nonebot_plugin_datastore", "nonebot_plugin_gocqhttp"]
-
-[nonebot.plugins]
-plugins = ["nonebot_plugin_apscheduler"]
+plugins = ["nonebot_plugin_datastore", "nonebot_plugin_gocqhttp", "nonebot_plugin_apscheduler"]
 plugin_dirs = ["src/plugins"]
 
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
+
