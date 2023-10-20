@@ -2,7 +2,7 @@
 <img src="docs/images/icon.png" width="200">
 </p>
 <h1 align="center">YanXiBot</h1>
-<p align="center">基于Nonebot2编写与gocq实现的QQ机器人程序</p>
+<p align="center">基于Nonebot2开发的聊天机器人</p>
 
 <div align="center">
 <img src="https://img.shields.io/badge/python-3.10-blue" alt="python">
